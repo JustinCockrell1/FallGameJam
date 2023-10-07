@@ -1,0 +1,18 @@
+Fall Down Stairs
+Idea 1
+
+*Mechanics:
+Life points, that you lose the longer you falling down the infinite stairs
+Control your player to move left and right along the staircase to pick up bandages that get increasingly
+farther apart
+you try to fall further down the stairs each time by buying Upgrades:
+-you can get more life points
+-you can reduce the rate at which you lose life points (defense)
+-increase fall speed(aerodynamics, rotundness) so you get farther before you die
+
+*Buying Upgrades (currency)
+
+*Chance:
+Bouncy stair - Bouncy stairs will appear and if you hit them you will bounce high off the stairs and 
+not lose life points while in the air
+gamble for upgrades
