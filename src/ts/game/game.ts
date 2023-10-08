@@ -1,4 +1,4 @@
-import { Game, Screen, TilemapWorld, Entity, TileMap, Tile } from "watawaeengine";
+import { Game, Screen, TilemapWorld, Entity, TileMap, Tile, Graphics } from "watawaeengine";
 import Rectangle from "./Rectangle";
 import Grenen from "./Grenen";
 import {Vector2d} from "watawaeengine";
@@ -6,6 +6,8 @@ import Circle from "./Circle";
 import AARectangle from "./AARectangle";
 import GrassTile from "./Tiles/GrassTile";
 import Stairs from "./Stairs";
+import Player from "./Entities/Player";
+import Obstacle from "./Entities/Obstacle";
 
 
 
@@ -17,6 +19,13 @@ export default class MyGame extends Game {
     mouseOffset:Vector2d = new Vector2d(0,0);
     mouse:Vector2d = new Vector2d(0,0);
     stairs: Stairs;
+    depth:number;
+    stairW:number;
+    stairX:number;
+    stairH:number;
+    player:Player;
+    obstacles:Obstacle[];
+
 
     constructor(root:HTMLElement|null) {
         super();
@@ -40,15 +49,28 @@ export default class MyGame extends Game {
         // this.world.addEntity(new Circle(5,6, .5, 0, 0 ));
         // this.world.addEntity(new Circle(5,6, .5, 0, 0 ));
         this.stairs = new Stairs(1000);
-
+        this.depth = 0;
         // this.world.entities[0].rotate(1);
         // this.world.entities[1].rotate(.5);
         // this.world.addEntity(new Grenen(3, 3, 1, 1, 15, 15));
+        this.player = new Player(3, 3, .5);
+        this.obstacles = [];
+        this.obstacles[0]=new Obstacle(2, 1, 1, 1);
+
+        this.stairW = 0;
+        this.stairX = 0;
+        this.stairH = 0;
+
+        Graphics.add("player", "../images/guy1.png");
+        Graphics.add("player2", "../images/guy2.png");
+        Graphics.add("player3", "../images/guy3.png");
+        Graphics.add("obstacle", "../images/obstacle.png");
 
     }
 
     update(elapsedTime: number, controllers: any): void {
         // this.world.entities[0].rotate(.01);
+
 
 
         if(this.getKey(".").pressed) {
@@ -69,74 +91,58 @@ export default class MyGame extends Game {
                 this.screen.camera.x+=1*elapsedTime;
             }
             if(this.getKey("t").held) {
-                this.screen.camera.y-=1*elapsedTime;
+                this.screen.camera.y-=.4*elapsedTime;
             }
             if(this.getKey("r").held) {
                 this.screen.camera.y+=1*elapsedTime;
             }
         }
 
-
-        if(this.selectedEntity) {
-            // this.selectedEntity.move(this.mouse.sub(this.mouseOffset))
-
-
-        if(this.getKey("ArrowLeft").held) {
-            this.selectedEntity?.rotate(-1*elapsedTime);
-        }
-        if(this.getKey("ArrowRight").held) {
-            this.selectedEntity?.rotate(1*elapsedTime);
-        }
-
-
-
-
-        if(this.getKey("w").held) {
-            // this.selectedEntity.forces.set("movement", new Vector2d(0,-1));
-            this.selectedEntity.velocity.y = -1;
-
-        }
-        else if(this.getKey("s").held) {
-            // this.selectedEntity.forces.set("movement", new Vector2d(0,1));
-            this.selectedEntity.velocity.y=1;
-        }
-        else {
-            // this.selectedEntity.velocity.y=0;
-        }
-        // if(this.getKey("w").pressed) {
-        //     this.selectedEntity.velocity.y=-5;
-        // }
         if(this.getKey("a").held) {
-            this.selectedEntity.velocity.x=-1;
+            this.player.moveBy(new Vector2d(-1, 0).scale(elapsedTime));
         }
-        else if(this.getKey("d").held) {
-            this.selectedEntity.velocity.x=1;
-        }
-        else {
-            // this.selectedEntity.velocity.x=0;
-        }
+        if(this.getKey("d").held) {
+            this.player.moveBy(new Vector2d(1, 0).scale(elapsedTime));
         }
 
-
-
-        // this.screen.fillRect(0, 0, 10, 10, "white");
-
-        // const w = this.screen.getWInTiles();
-        // const h = this.screen.getHInTiles();
-
-        // for(let i = 0; i < w; i++) {
-        //     for(let j = 0; j < h; j++) {
-        //         this.screen.strokeRect(i, j, 1, 1, "red")
-        //     }
-        // }
-
-        // this.world.tick(elapsedTime);
+        this.player.tick(elapsedTime);
 
 
         // this.world.render(this.screen);
         this.screen.drawBackground();
-        // this.stairs.a+=1*elapsedTime;
-        this.stairs.render(this.screen);
+
+        const vanishingPoint = new Vector2d(4.5, 4);
+
+        const numOfStairs = 100;
+        let depth = 0;//.3*numOfStairs;//5*10;
+        let change = .5;
+
+        let x = 2;
+        let y = 7;
+        let w = 4;
+        let h = .5;
+        for(let i = 0; i <numOfStairs;i++) {
+            const height = .5-(0.1*i);
+
+            // this.screen.strokePolygon([new Vector2d(4, 7), new Vector2d(5, 7), new Vector2d(5, 7.5), new Vector2d(4, 7.5)], "black");
+            this.screen.strokeRect(x+this.stairX, y+this.depth, w+this.stairW ,h+this.stairH, "black");
+            // this.screen.fillIsometricShape([new Vector2d(4, 7), new Vector2d(5, 7), new Vector2d(5, 7.5), new Vector2d(4, 7.5)],4.5, 4, depth+this.depth);
+            const oldW = w;
+            w*=.95;
+            h*=.95;
+            y-=h;
+            x+=(oldW-w)/2;
+            // depth-=.1;
+
+        }
+        this.screen.fillCircle(4.5, 4, .1, "red")
+
+        this.player.render(this.screen);
+        this.obstacles[0].render(this.screen);
+        this.stairX/=(.95*elapsedTime);
+        this.stairW/=(.95*elapsedTime);
+        this.depth+=this.stairH*elapsedTime;
+
 
     }
 
