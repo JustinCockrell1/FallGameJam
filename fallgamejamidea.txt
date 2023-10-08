@@ -11,6 +11,9 @@ you try to fall further down the stairs each time by buying Upgrades:
 -increase fall speed(aerodynamics, rotundness) so you get farther before you die
 
 *Buying Upgrades (currency)
+- get coins for distance traveled down stairs
+- get coins for steering into them
+- level up each upgrade, the price increases with each upgrade (like mobile game)
 
 *Chance:
 Bouncy stair - Bouncy stairs will appear and if you hit them you will bounce high off the stairs and 
